@@ -3,6 +3,7 @@ package dao.imp;
 import java.util.List;
 
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import beans.Post;
 import beans.User;
@@ -10,6 +11,17 @@ import dao.UserDao;
 
 public class UserDaoImp implements UserDao {
 
+	@Override
+	public User find(String username, String password) {
+		Session sess = HibernateUtil.getInstance().openSession();
+		Query q = sess.createQuery("from User WHERE username=:username AND password=:password");
+		q.setParameter("username", username);
+		q.setParameter("password", password);
+		User u = (User) q.uniqueResult();
+		sess.close();
+		return u;
+	}
+	
 	@Override
 	public void create(User user) {
 		Session sess = HibernateUtil.getInstance().openSession();

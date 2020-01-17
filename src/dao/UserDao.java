@@ -10,4 +10,5 @@ public interface UserDao {
 	public List<User> findAll();
 	public void update();
 	public void delete();
+	public User find(String email, String password);
 }

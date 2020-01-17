@@ -13,4 +13,5 @@ public interface PostBusiness {
 	public List<Post> findAll();
 	public void update();
 	public void delete();
+	public List<Post> findByUser(int userId);
 }

@@ -52,9 +52,9 @@ public class Posts extends HttpServlet {
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
 		String json;
 		PrintWriter out = response.getWriter();
-
-		switch (request.getPathInfo()) {
-			case "/All":
+		String path = request.getRequestURI();
+		switch (path) {
+			case "/ForUs/Posts/All":
 				posts = pBus.findAll();
 						
 				json = gson.toJson(posts);
@@ -66,6 +66,19 @@ public class Posts extends HttpServlet {
 			break;
 
 		default:
+			if(path.matches("/ForUs/Posts/user")) {
+				response.setContentType("text/plain");
+				;
+				posts = pBus.findByUser( Integer.parseInt( request.getParameter("id") ) 	);
+				
+				json = gson.toJson(posts);
+		
+				response.setContentType("text/plain");
+				
+				out.print(json);
+				out.flush();
+			break;
+			}
 			response.setContentType("text/plain");
 			
 			out.print("404 RESSOURCE NOT FOUND");

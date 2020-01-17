@@ -34,6 +34,11 @@ public class CommentBusinessImp implements CommentBusiness {
 	}
 
 	@Override
+	public List<Comment> findByPost(int postId) {
+		return cdao.findByPost(postId);
+	}
+
+	@Override
 	public List<Comment> findAll() {
 		return cdao.findAll();
 	}

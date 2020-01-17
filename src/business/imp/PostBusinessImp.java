@@ -52,6 +52,11 @@ public class PostBusinessImp implements PostBusiness {
 	}
 
 	@Override
+	public List<Post> findByUser(int userId) {
+		return pdao.findByUser(userId);
+	}
+
+	@Override
 	public void update() {
 		// TODO Auto-generated method stub
 		
@@ -62,5 +67,6 @@ public class PostBusinessImp implements PostBusiness {
 		// TODO Auto-generated method stub
 		
 	}
+
 
 }

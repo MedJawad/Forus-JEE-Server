@@ -10,4 +10,5 @@ public interface UserBusiness {
 	public List<User> findAll();
 	public void update();
 	public void delete();
+	public User login(String email, String password);
 }

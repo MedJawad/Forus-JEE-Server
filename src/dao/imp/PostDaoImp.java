@@ -32,6 +32,14 @@ public class PostDaoImp implements PostDao{
 	}
 
 	@Override
+	public List<Post> findByUser(int userId) {
+		Session sess = HibernateUtil.getInstance().openSession();
+		List<Post> posts = sess.createQuery("from Post WHERE user= "+userId).list();
+		sess.close();
+		return posts;
+	}
+
+	@Override
 	public void update() {
 		// TODO Auto-generated method stub
 		
@@ -42,5 +50,6 @@ public class PostDaoImp implements PostDao{
 		// TODO Auto-generated method stub
 		
 	}
+
 
 }

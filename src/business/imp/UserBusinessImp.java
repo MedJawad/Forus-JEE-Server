@@ -15,6 +15,12 @@ public class UserBusinessImp implements UserBusiness {
 	}
 	
 	@Override
+	public User login(String username, String password) {
+		User u = udao.find(username, password);
+		return u;
+	}
+	
+	@Override
 	public User create(String username, String email, String password) {
 		User u = new User();
 		u.setUsername(username);
@@ -46,5 +52,7 @@ public class UserBusinessImp implements UserBusiness {
 		// TODO Auto-generated method stub
 		
 	}
+
+
 
 }

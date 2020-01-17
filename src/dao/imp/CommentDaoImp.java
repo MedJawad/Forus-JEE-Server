@@ -24,6 +24,14 @@ public class CommentDaoImp implements CommentDao {
 	}
 
 	@Override
+	public List<Comment> findByPost(int postId) {
+		Session sess = HibernateUtil.getInstance().openSession();
+		List<Comment> comments = sess.createQuery("from Comment WHERE post="+postId).list();
+		sess.close();
+		return comments;
+	}
+
+	@Override
 	public List<Comment> findAll() {
 		Session sess = HibernateUtil.getInstance().openSession();
 		List<Comment> comments = sess.createQuery("from Comment").list();
@@ -42,5 +50,6 @@ public class CommentDaoImp implements CommentDao {
 		// TODO Auto-generated method stub
 		
 	}
+
 
 }

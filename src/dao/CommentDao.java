@@ -10,4 +10,5 @@ public interface CommentDao {
 	public List<Comment> findAll();
 	public void update();
 	public void delete();
+	public List<Comment> findByPost(int postId);
 }
