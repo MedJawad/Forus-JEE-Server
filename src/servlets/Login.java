@@ -2,6 +2,7 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -73,103 +74,110 @@ public class Login extends HttpServlet {
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-//		HttpSession session = req.getSession();
-//		User u = null;
-//		if(session.getAttribute("currentUser") == null) {
-//		 String[] infos = getInfosFromCookie(req);
-//			if(infos == null) { // NO COOKIE
-//					String username=req.getParameter("username");
-//					String password=req.getParameter("password");
-//		
-//					if(username != null && password!=null) {
-//						 u = ub.login(username, password);
-//					
-//							if(u == null) { // WRONG TRY TO LOGIN
-//								res.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested user not found.");
-//								return;
-//								}else {
-////									if(req.getParameter("remember") != null) {
-////										Cookie ck1 = new Cookie("username", username);
-////										
-////										Cookie ck2 = new Cookie("password", password);
-////										res.addCookie(ck1);
-////										res.addCookie(ck2);
-////									}
-//									
-//									
-//									session.setAttribute("currentUser", u);
-//								}
-//					}else { // 
-//						res.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested user not found.");
-//						System.out.println("null username or password");
-//						return;
-//					}
-//			
-//				}else { // NO CURRENT USER IN SESSION AND COOKIE IS FOUND
-////					 u = ub.login(infos[0], infos[1]);
-////					if(u == null) { // WRONG TRY TO LOGIN WITH COOKIE
-////						
-////						
-////						//DELETING THE COOKIE
-////				        Cookie cookie = new Cookie("username", "");
-////				        cookie.setMaxAge(0);
-////				        res.addCookie(cookie);
-////				        cookie = new Cookie("password", "");
-////				        cookie.setMaxAge(0);
-////				        res.addCookie(cookie);
-////				        
-////				        // FORWARDING TO LOGIN WITH ERROR MESSAGE
-////						res.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested user not found.");
-////
-////						return;
-////						
-////						}else {
-////							session.setAttribute("currentUser", u);
-////						}
-//					res.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested user not found.");
-//
-//
-//				}
-//	
-//			}
 
-		HttpSession session = req.getSession();
+		HttpSession session = null;
+
+		String[] infos = getInfosFromCookie(req);
 		String username = req.getParameter("username");
 		String password = req.getParameter("password");
+		String sessionId = req.getParameter("sessionId");
 		User u = null;
 
-		if (u == null && session.getAttribute("currentUser") != null) {
+		if (sessionId == null) {// Session id not provided by request => Check if a sessionId cookie exist
+			Cookie cks[] = req.getCookies();
+			if (cks != null) {
+				
+				int index = -1;
+				
+				for (int i = 0; i < cks.length; i++) {
+					if (cks[i].getName().equals("sessionId")) {
+						index = i;
+					}
+				}
+				if (index != -1 && cks[index].getValue() != null) {
+					sessionId = cks[index].getValue();
+				}
+			}
+		}
+
+		if (sessionId != null) { // Client Or Cookie provided a session Id
+			HashMap activeSessions = (HashMap) this.getServletContext().getAttribute("activeSessions");
+			session = (HttpSession) activeSessions.get(sessionId);
+		}
+		
+
+
+		if (session == null) { // The Client didn't provide a session Id or provided a wrong one , and session cookie not found
+			session = req.getSession();
+		}
+
+		if (session != null) { // The Client didn't provided a correct session Id => setting sessionId cookie
+			Cookie sessCookie = new Cookie("sessionId", session.getId());
+			
+			res.addCookie(sessCookie);
+		}
+
+		System.out.println("Id of session is :" + session.getId());
+
+		if (u == null && session.getAttribute("currentUser") != null) { // Current user available in session
 			System.out.println("getting user from session");
 			u = (User) session.getAttribute("currentUser");
 		}
 
-		if (u == null && username != null && password != null) {
+		if (u == null && infos != null) {// NO CURRENT USER IN SESSION AND USER COOKIE IS FOUND
+
+			u = ub.login(infos[0], infos[1]);
+
+			if (u == null) { // WRONG TRY TO LOGIN WITH COOKIE
+
+				// DELETING THE COOKIE
+				Cookie cookie = new Cookie("username", "");
+				cookie.setMaxAge(0);
+				res.addCookie(cookie);
+				cookie = new Cookie("password", "");
+				cookie.setMaxAge(0);
+				res.addCookie(cookie);
+
+			} else {
+				session.setAttribute("currentUser", u);
+			}
+		}
+
+		if (u == null && username != null && password != null) { // No User in session , no cookie found
 			u = ub.login(username, password);
 
 			if (u == null) { // WRONG TRY TO LOGIN
 				System.out.println("wrong try to login");
 			} else {
 				System.out.println("Successfully logged in");
+				if (req.getParameter("remember") != null) {
+					Cookie ck1 = new Cookie("username", username);
+
+					Cookie ck2 = new Cookie("password", password);
+					res.addCookie(ck1);
+					res.addCookie(ck2);
+				}
 				session.setAttribute("currentUser", u);
 			}
 		}
 
-		if (u != null) {
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+				.create();
+		Auth auth = new Auth(u, session.getId());
+		String json;
+		PrintWriter out = res.getWriter();
 
-			Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-					.create();
-			String json;
-			PrintWriter out = res.getWriter();
+		json = gson.toJson(auth);
 
-			json = gson.toJson(u);
+		res.setContentType("text/plain");
 
-			res.setContentType("text/plain");
-
-			out.print(json);
-			out.flush();
-		}else {
-			res.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested user not found.");
-		}
+		out.print(json);
+		out.flush();
+//		if (u != null) {
+//
+//		} else {
+//			res.sendError(HttpServletResponse.SC_NOT_FOUND, "The requested user not found.");
+//		}
 
 	}
 
