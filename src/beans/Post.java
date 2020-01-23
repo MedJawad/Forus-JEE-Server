@@ -49,6 +49,8 @@ public class Post {
 	@OneToMany(mappedBy = "post",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private List<Comment> comments = new ArrayList<>();
 	
+	@OneToMany(mappedBy = "post",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private List<PostVote> votes = new ArrayList<>();
 	
 	public int getId() {
 		return id;

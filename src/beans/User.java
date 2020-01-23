@@ -38,6 +38,12 @@ public class User {
 
 	@Expose private int nbrOfPosts=0;
 
+	@OneToMany(mappedBy = "user",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private List<PostVote> postVotes = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "user",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private List<CommentVote> commentVotes = new ArrayList<>();
+	
 	@OneToMany(mappedBy = "user")
 	private List<Post> posts = new ArrayList<>();
 
