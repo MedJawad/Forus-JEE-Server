@@ -30,9 +30,11 @@ public class UserDaoImp implements UserDao {
 	}
 
 	@Override
-	public void findById() {
-		// TODO Auto-generated method stub
-		
+	public User findById(int id) {
+		Session sess = HibernateUtil.getInstance().openSession();
+		User user = (User) sess.createQuery("from User where id="+id).uniqueResult();
+		sess.close();
+		return user;
 	}
 
 	@Override

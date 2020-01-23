@@ -108,7 +108,8 @@ public class Login extends HttpServlet {
 
 
 		if (session == null) { // The Client didn't provide a session Id or provided a wrong one , and session cookie not found
-			session = req.getSession();
+			System.out.println("getting a new session ");
+			session = req.getSession(true);
 		}
 
 		if (session != null) { // The Client didn't provided a correct session Id => setting sessionId cookie

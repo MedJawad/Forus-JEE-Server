@@ -42,11 +42,15 @@ public class Logout extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		req.getSession().removeAttribute("currentUser");
+		req.getSession(false).removeAttribute("currentUser");
+		req.getSession(false).invalidate();
         Cookie cookie = new Cookie("username", "");
         cookie.setMaxAge(0);
         res.addCookie(cookie);
         cookie = new Cookie("password", "");
+        cookie.setMaxAge(0);
+        res.addCookie(cookie);
+        cookie = new Cookie("sessionId", "");
         cookie.setMaxAge(0);
         res.addCookie(cookie);
 		System.out.println("logout succeeded");

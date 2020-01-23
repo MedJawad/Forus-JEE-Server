@@ -6,7 +6,7 @@ import beans.User;
 
 public interface UserDao {
 	public void create(User cmt);
-	public void findById();
+	public User findById(int id);
 	public List<User> findAll();
 	public void update();
 	public void delete();

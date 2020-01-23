@@ -52,8 +52,8 @@ public class PostBusinessImp implements PostBusiness {
 	}
 
 	@Override
-	public List<Post> findByUser(int userId) {
-		return pdao.findByUser(userId);
+	public List<Post> findUserVisiblePosts(User user) {
+		return pdao.findUserVisiblePosts(user);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package business.imp;
 
 import java.util.List;
 
+import beans.Group;
 import beans.User;
 import business.UserBusiness;
 import dao.UserDao;
@@ -33,7 +34,7 @@ public class UserBusinessImp implements UserBusiness {
 	@Override
 	public User findById(int id) {
 		// TODO Auto-generated method stub
-		return null;
+		return udao.findById(id);
 	}
 
 	@Override

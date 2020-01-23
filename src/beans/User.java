@@ -14,6 +14,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import com.google.gson.annotations.Expose;
 
 @Entity
@@ -41,7 +44,8 @@ public class User {
 	@OneToMany(mappedBy = "admin")
 	private List<Group> ownedGroups = new ArrayList<>();
 	
-	@ManyToMany
+	@ManyToMany(mappedBy = "members")
+	@LazyCollection(LazyCollectionOption.FALSE)
 	private List<Group> groups = new ArrayList<>();
 
 	public int getId() {
@@ -83,7 +87,13 @@ public class User {
 	public void setPosts(List<Post> posts) {
 		this.posts = posts;
 	}
-
+	public void addPost(Post post) {
+		this.posts.add(post);
+	}
+	public void removePost(Post post) {
+		this.posts.remove(post);
+	}
+	
 	public String getEmail() {
 		return email;
 	}
@@ -99,7 +109,12 @@ public class User {
 	public void setOwnedGroups(List<Group> ownedGroups) {
 		this.ownedGroups = ownedGroups;
 	}
-
+	public void addOwnedGroup(Group group) {
+		this.ownedGroups.add(group);
+	}
+	public void removeOwnedGroup(Group group) {
+		this.ownedGroups.remove(group);
+	}
 	public List<Group> getGroups() {
 		return groups;
 	}
@@ -107,8 +122,12 @@ public class User {
 	public void setGroups(List<Group> groups) {
 		this.groups = groups;
 	}
-
-
+	public void addGroup(Group group) {
+		this.groups.add(group);
+	}
+	public void removeGroup(Group group) {
+		this.groups.remove(group);
+	}
 	
 	
 }
